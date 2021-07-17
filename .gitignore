@@ -1,0 +1,8 @@
+.idea/
+.vscode/
+.certs/
+coverage.out
+
+*.db
+
+__debug_bin

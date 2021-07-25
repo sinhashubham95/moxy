@@ -24,7 +24,7 @@ var persistenceSave = persistence.Save
 var persistenceDelete = persistence.Delete
 
 var portMu sync.Mutex
-var port = 1001
+var port = 1201
 
 func getRandomPortNumber() int {
 	portMu.Lock()

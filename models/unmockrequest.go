@@ -11,6 +11,7 @@ type UnMockRequest struct {
 	Path   string `json:"path"`
 }
 
+// Clean is used to clean the request path
 func (r *UnMockRequest) Clean() {
 	if r.Path != "" {
 		r.Path = filepath.Clean(r.Path)

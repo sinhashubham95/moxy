@@ -34,10 +34,12 @@ func (m *Mock) Key() ([]byte, error) {
 	})
 }
 
+// Encode is used to get the encoded bytes for this mock instance
 func (m *Mock) Encode() ([]byte, error) {
 	return commons.EncodeJSON(m)
 }
 
+// Decode is used to decode the bytes to this mock instance
 func (m *Mock) Decode(b []byte) error {
 	return commons.DecodeJSON(b, m)
 }

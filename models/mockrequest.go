@@ -19,12 +19,14 @@ type MockRequest struct {
 	ResponseBody   interface{} `json:"responseBody"`
 }
 
+// Clean is used to clean the request path
 func (r *MockRequest) Clean() {
 	if r.Path != "" {
 		r.Path = filepath.Clean(r.Path)
 	}
 }
 
+// Validate is used to validate the request
 func (r *MockRequest) Validate() error {
 	if r.Tag == "" {
 		// empty tag - which is not allowed because it is the context of the mock
@@ -50,6 +52,7 @@ func (r *MockRequest) Validate() error {
 	return nil
 }
 
+// Default is used to set default values for the missing request fields
 func (r *MockRequest) Default() {
 	if r.ResponseStatus == 0 {
 		r.ResponseStatus = http.StatusOK

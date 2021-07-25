@@ -8,8 +8,10 @@ import (
 )
 
 func main() {
-	err := fasthttp.ListenAndServe(fmt.Sprintf(":%d", flags.Port()), getFastHTTPHandler())
-	if err != nil {
-		return
+	if flags.TLSEnabled() {
+		_ = fasthttp.ListenAndServeTLS(fmt.Sprintf(":%d", flags.Port()), flags.CertFilePath(),
+			flags.KeyFilePath(), getFastHTTPHandler())
+	} else {
+		_ = fasthttp.ListenAndServe(fmt.Sprintf(":%d", flags.Port()), getFastHTTPHandler())
 	}
 }

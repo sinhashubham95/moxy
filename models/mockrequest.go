@@ -2,10 +2,12 @@ package models
 
 import (
 	"errors"
-	"github.com/sinhashubham95/moxy/commons"
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"strings"
+
+	"github.com/sinhashubham95/moxy/commons"
 )
 
 // MockRequest is the request body for the mock endpoint
@@ -31,9 +33,15 @@ func (r *MockRequest) Validate() error {
 		// method should be one of GET, POST, PUT or DELETE
 		return errors.New("http method should be one of GET, POST, PUT or DELETE")
 	}
-	if r.Path == "" || strings.HasPrefix(r.Path, commons.MoxyPrefix) {
+	if r.Path == "" {
 		// empty path - which is not allowed
 		return errors.New("empty path provided")
+	}
+	if strings.HasPrefix(r.Path, commons.ActuatorPrefix) {
+		return fmt.Errorf("path cannot start with %s", commons.ActuatorPrefix)
+	}
+	if strings.HasPrefix(r.Path, commons.MoxyPrefix) {
+		return fmt.Errorf("path cannot start with %s", commons.MoxyPrefix)
 	}
 	return nil
 }

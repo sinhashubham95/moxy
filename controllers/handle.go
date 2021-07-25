@@ -59,6 +59,7 @@ func Handle(ctx *fasthttp.RequestCtx) {
 	err = fasthttp.Do(req, res)
 	if err != nil {
 		ctx.SetStatusCode(http.StatusInternalServerError)
+		ctx.SetBody([]byte(err.Error()))
 		return
 	}
 	ctx.SetStatusCode(res.StatusCode())

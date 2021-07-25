@@ -1,5 +1,7 @@
 package commons
 
+import "fmt"
+
 // Common Constants
 const (
 	ActuatorPrefix          = "/actuator"
@@ -13,9 +15,9 @@ const (
 )
 
 // Endpoint Paths
-const (
-	MockEndpointPath   = "/moxy/mock"
-	UnMockEndpointPath = "/moxy/unMock"
+var (
+	MockEndpointPath   = fmt.Sprintf("%smock", MoxyPrefix)
+	UnMockEndpointPath = fmt.Sprintf("%sunMock", MoxyPrefix)
 )
 
 // MockEntityName is the mock entity name

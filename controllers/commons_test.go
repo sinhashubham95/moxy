@@ -4,21 +4,23 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/sinhashubham95/moxy/commons"
-	"github.com/sinhashubham95/moxy/controllers"
-	"github.com/sinhashubham95/moxy/persistence"
 	"github.com/stretchr/testify/assert"
 	"github.com/valyala/fasthttp"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"sync"
 	"testing"
+
+	"github.com/sinhashubham95/moxy/commons"
+	"github.com/sinhashubham95/moxy/controllers"
+	"github.com/sinhashubham95/moxy/persistence"
 )
 
 var encodeJSON = commons.EncodeJSON
 var decodeJSON = commons.DecodeJSON
 
 var persistenceSave = persistence.Save
-var persistenceView = persistence.View
 var persistenceDelete = persistence.Delete
 
 var portMu sync.Mutex
@@ -35,7 +37,7 @@ func setupFastHTTPHandlersAndGetResponse(t *testing.T, method, path string, body
 	handler fasthttp.RequestHandler) *http.Response {
 	port := getRandomPortNumber()
 
-	go func(method, path string, handler fasthttp.RequestHandler) {
+	go func(port int, method, path string, handler fasthttp.RequestHandler) {
 		assert.NoError(
 			t,
 			fasthttp.ListenAndServe(
@@ -49,7 +51,7 @@ func setupFastHTTPHandlersAndGetResponse(t *testing.T, method, path string, body
 				},
 			),
 		)
-	}(method, path, handler)
+	}(port, method, path, handler)
 
 	request, err := http.NewRequest(method, fmt.Sprintf("http://localhost:%d%s", port, path),
 		bytes.NewReader(body))
@@ -59,6 +61,15 @@ func setupFastHTTPHandlersAndGetResponse(t *testing.T, method, path string, body
 	assert.NoError(t, err)
 
 	return response
+}
+
+func testResponseBodyAgainstError(t *testing.T, resBody io.ReadCloser, msg string) {
+	body, err := ioutil.ReadAll(resBody)
+	assert.NoError(t, err)
+	defer func(t *testing.T, body io.ReadCloser) {
+		assert.NoError(t, body.Close())
+	}(t, resBody)
+	assert.Equal(t, msg, string(body))
 }
 
 func mockEncodeJSONWithError() {
@@ -92,17 +103,6 @@ func mockPersistenceSaveWithError() {
 
 func unMockPersistenceSave() {
 	controllers.PersistenceSave = persistenceSave
-}
-
-func mockPersistenceViewWithError() {
-	persistenceView = controllers.PersistenceView
-	controllers.PersistenceView = func(persistence.Entity) error {
-		return errors.New("error")
-	}
-}
-
-func unMockPersistenceView() {
-	controllers.PersistenceView = persistenceView
 }
 
 func mockPersistenceDeleteWithError() {

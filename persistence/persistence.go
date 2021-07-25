@@ -10,13 +10,19 @@ import (
 
 // Entity is the set of methods which have to be implemented by any entity
 type Entity interface {
-	Name() ([]byte, error)
+	Name() []byte
 	Key() ([]byte, error)
 	Encode() ([]byte, error)
 	Decode(bytes []byte) error
 }
 
 var db *bolt.DB
+
+// Errors
+var (
+	ErrEntityNotFound = errors.New("entity not found")
+	ErrRecordNotFound = errors.New("record not found")
+)
 
 func init() {
 	var err error
@@ -31,11 +37,7 @@ func init() {
 // Save is used to save the entry in the proper bucket with the proper key
 func Save(entity Entity) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		name, err := entity.Name()
-		if err != nil {
-			// error getting entity name
-			return err
-		}
+		name := entity.Name()
 		b, err := tx.CreateBucketIfNotExists(name)
 		if err != nil {
 			// error creating or fetching bucket
@@ -59,14 +61,10 @@ func Save(entity Entity) error {
 // View is used to fetch the entry in the proper bucket with the proper key
 func View(entity Entity) error {
 	return db.View(func(tx *bolt.Tx) error {
-		name, err := entity.Name()
-		if err != nil {
-			// error getting entity name
-			return err
-		}
+		name := entity.Name()
 		b := tx.Bucket(name)
 		if b == nil {
-			return errors.New("entity not found")
+			return ErrEntityNotFound
 		}
 		key, err := entity.Key()
 		if err != nil {
@@ -75,7 +73,7 @@ func View(entity Entity) error {
 		}
 		value := b.Get(key)
 		if value == nil {
-			return errors.New("record not found")
+			return ErrRecordNotFound
 		}
 		return entity.Decode(value)
 	})
@@ -84,15 +82,10 @@ func View(entity Entity) error {
 // Delete is used to delete the entry in the proper bucket with the proper key
 func Delete(entity Entity) error {
 	return db.Update(func(tx *bolt.Tx) error {
-		name, err := entity.Name()
-		if err != nil {
-			// error getting entity name
-			return err
-		}
-		b, err := tx.CreateBucketIfNotExists(name)
-		if err != nil {
-			// error creating or fetching bucket
-			return err
+		name := entity.Name()
+		b := tx.Bucket(name)
+		if b == nil {
+			return ErrEntityNotFound
 		}
 		key, err := entity.Key()
 		if err != nil {

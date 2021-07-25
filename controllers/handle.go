@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/sinhashubham95/moxy/persistence"
 	"github.com/valyala/fasthttp"
 	"net/http"
 
@@ -25,7 +24,7 @@ func Handle(ctx *fasthttp.RequestCtx) {
 	}
 
 	// try to fetch the mock
-	err := persistence.View(&mock)
+	err := PersistenceView(&mock)
 	if err == nil {
 		// this means that the mock exists
 		ctx.SetStatusCode(mock.Status)
@@ -36,7 +35,7 @@ func Handle(ctx *fasthttp.RequestCtx) {
 			ctx.SetBodyString(s)
 		} else {
 			// first parse to bytes
-			body, err := commons.EncodeJSON(mock.Body)
+			body, err := EncodeJSON(mock.Body)
 			if err == nil {
 				// now write
 				ctx.SetContentType(commons.ApplicationJSONContentType)

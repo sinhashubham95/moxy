@@ -21,8 +21,8 @@ type Mock struct {
 }
 
 // Name is the mock entity name
-func (m *Mock) Name() ([]byte, error) {
-	return []byte(commons.MockEntityName), nil
+func (m *Mock) Name() []byte {
+	return []byte(commons.MockEntityName)
 }
 
 // Key is the key of the mock entity

@@ -1,23 +1,23 @@
 package controllers
 
 import (
-	"github.com/sinhashubham95/moxy/commons"
-	"github.com/sinhashubham95/moxy/models"
-	"github.com/sinhashubham95/moxy/persistence"
-	"github.com/sinhashubham95/moxy/persistence/entities"
 	"github.com/valyala/fasthttp"
 	"net/http"
+
+	"github.com/sinhashubham95/moxy/models"
+	"github.com/sinhashubham95/moxy/persistence/entities"
 )
 
 // HandleMock is used to mock and endpoint
 func HandleMock(ctx *fasthttp.RequestCtx) {
 	var request models.MockRequest
-	err := commons.DecodeJSON(ctx.PostBody(), &request)
+	err := DecodeJSON(ctx.PostBody(), &request)
 	if err != nil {
 		// invalid request body
 		ctx.Error("invalid json request body provided", http.StatusBadRequest)
 		return
 	}
+	(&request).Clean()
 	err = (&request).Validate()
 	if err != nil {
 		// invalid request
@@ -26,7 +26,7 @@ func HandleMock(ctx *fasthttp.RequestCtx) {
 	}
 	(&request).Default()
 	// now time to save it
-	err = persistence.Save(&entities.Mock{
+	err = PersistenceSave(&entities.Mock{
 		Tag:    request.Tag,
 		Method: request.Method,
 		Path:   request.Path,

@@ -20,7 +20,9 @@ type MockRequest struct {
 }
 
 func (r *MockRequest) Clean() {
-	r.Path = filepath.Clean(r.Path)
+	if r.Path != "" {
+		r.Path = filepath.Clean(r.Path)
+	}
 }
 
 func (r *MockRequest) Validate() error {
@@ -34,7 +36,6 @@ func (r *MockRequest) Validate() error {
 		return errors.New("http method should be one of GET, POST, PUT or DELETE")
 	}
 	if r.Path == "" {
-		// empty path - which is not allowed
 		return errors.New("empty path provided")
 	}
 	if strings.HasPrefix(r.Path, commons.ActuatorPrefix) {
@@ -42,6 +43,9 @@ func (r *MockRequest) Validate() error {
 	}
 	if strings.HasPrefix(r.Path, commons.MoxyPrefix) {
 		return fmt.Errorf("path cannot start with %s", commons.MoxyPrefix)
+	}
+	if r.ResponseStatus != 0 && (r.ResponseStatus < 100 || r.ResponseStatus > 599) {
+		return errors.New("response status code should be in the range 100-599")
 	}
 	return nil
 }

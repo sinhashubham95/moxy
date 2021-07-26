@@ -45,8 +45,9 @@ jobs:
     name: Build
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.platform }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+    runs-on: ubuntu-latest
     needs: [test]
     steps:
       - name: Set up Go 1.x
@@ -59,11 +60,13 @@ jobs:
       - name: Get dependencies
         run: |
           go get -v -t -d ./...
+      - name: Get build timestamp
+        run: echo "::set-output name=timestamp::$(date -u '+%Y-%m-%d_%I:%M:%S%p')
       - name: Build
-        run: go build -v
-      - name: Name Build
+        run: GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -ldflags -X github.com/sinhashubham95/go-actuator/core.BuildStamp=${{ steps.date.outputs.timestamp }} -X github.com/sinhashubham95/go-actuator/core.GitCommitID=$GITHUB_SHA -X github.com/sinhashubham95/go-actuator/core.GitPrimaryBranch=$GITHUB_REF -X github.com/sinhashubham95/go-actuator/core.GitURL=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY -X github.com/sinhashubham95/go-actuator/core.Username=sinhashubham95 -X github.com/sinhashubham95/go-actuator/core.HostName=sinhashubham95  -X "github.com/sinhashubham95/go-actuator/core.GitCommitTime=${{ steps.date.outputs.timestamp }}" -X "github.com/sinhashubham95/go-actuator/core.GitCommitAuthor=sinhashubham95" -v
+      - name: Rename build
         run: |
-          mv moxy moxy-${{ matrix.platform }}
+          mv moxy moxy-${{ matrix.os }}-${{ matrix.arch }}
       - name: Upload Build
         uses: skx/github-action-publish-binaries@master
         env:

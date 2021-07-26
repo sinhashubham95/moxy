@@ -8,3 +8,5 @@ coverage.out
 __debug_bin
 
 persistence.db
+
+moxy*

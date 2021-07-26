@@ -1,9 +1,7 @@
-name: Go
+name: Release
 
 on:
   push:
-    branches: [master]
-  pull_request:
     branches: [master]
 
 jobs:
@@ -11,8 +9,8 @@ jobs:
     name: Test
     strategy:
       matrix:
-        go-version: [1.16.x]
-        platform: [macos-latest]
+        go-version: [1.13.x, 1.14.x, 1.15.x, 1.16.x]
+        platform: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Install Go
@@ -25,12 +23,8 @@ jobs:
       - name: Get dependencies
         run: |
           go get -v -t -d ./...
-          if [ -f Gopkg.toml ]; then
-              curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-              dep ensure
-          fi
       - name: Run tests
-        run: go test -v -coverprofile=profile.cov ./...
+        run: go test ./... -coverprofile profile.cov
       - name: Send coverage
         uses: shogo82148/actions-goveralls@v1
         with:
@@ -40,7 +34,7 @@ jobs:
 
   finish:
     name: Finish
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     needs: [test]
     steps:
       - name: Sending coverage finished
@@ -50,7 +44,10 @@ jobs:
 
   build:
     name: Build
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
     needs: [test]
     steps:
       - name: Set up Go 1.x
@@ -63,9 +60,14 @@ jobs:
       - name: Get dependencies
         run: |
           go get -v -t -d ./...
-          if [ -f Gopkg.toml ]; then
-              curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-              dep ensure
-          fi
       - name: Build
         run: go build -v
+      - name: Name Build
+        run: |
+          mv moxy moxy-${{ matrix.platform }}
+      - name: Upload Build
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: 'moxy-*'

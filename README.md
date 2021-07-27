@@ -51,3 +51,19 @@ Moxy is a simple mocker and proxy application server. Here you can create mock e
 ## Project Versioning
 
 Moxy uses [semantic versioning](http://semver.org/). No API changes will be introduced in the minor and patch version changes. New minor versions might add additional features to the API.
+
+## Getting Started(standalone application)
+
+You can download a pre-compiled package for Linux or MAC OSX [here](https://github.com/sinhashubham95/moxy/releases/latest).
+
+You can also pull the latest docker image for Moxy from [Docker Hub](https://github.com/sinhashubham95/moxy/pkgs/container/moxy).
+
+```shell
+docker pull ghcr.io/sinhashubham95/moxy:latest
+```
+
+Create an empty directory, change into it and run the following to start Moxy:
+
+```shell
+docker run --rm --user $(id -u):$(id -g) -v $PWD:/data -p 9091:9091 sinhashubham95/moxy -host 0.0.0.0
+```

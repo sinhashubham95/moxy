@@ -3,6 +3,9 @@ name: Build
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - '**/README.md'
+      - '**/version.json'
 
 jobs:
   test:

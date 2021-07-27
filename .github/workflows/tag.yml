@@ -11,6 +11,8 @@ jobs:
     name: Tag
     runs-on: ubuntu-latest
     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
       - name: Get Current Version
         id: version
         uses: notiz-dev/github-action-json-property@release

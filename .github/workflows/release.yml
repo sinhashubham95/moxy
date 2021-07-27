@@ -2,16 +2,17 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [master]
+    paths:
+      - "version.json"
 
 jobs:
   build:
     name: Build
     strategy:
       matrix:
-        os: [linux, darwin]
-        arch: [amd64, arm64]
+        os: [ linux, darwin ]
+        arch: [ amd64, arm64 ]
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go 1.x
@@ -37,13 +38,30 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [ build ]
     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Get Current Version
+        id: version
+        uses: notiz-dev/github-action-json-property@release
+        with:
+          path: "version.json"
+          prop_path: "version"
       - name: Download
         uses: actions/download-artifact@v2
+      - name: Tag
+        id: tag
+        uses: anothrNick/github-tag-action@1.26.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CUSTOM_TAG: "v${{ steps.version.outputs.prop }}"
       - name: Release
         id: release
         uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ steps.tag.outputs.new_tag }}
+          tag_name: ${{ steps.tag.outputs.new_tag }}
       - name: Upload
         uses: skx/github-action-publish-binaries@release-1.3
         env:

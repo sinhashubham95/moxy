@@ -3,11 +3,11 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*.*.*"
 
 jobs:
-  release:
-    name: Release
+  build:
+    name: Build
     strategy:
       matrix:
         os: [linux, darwin]
@@ -28,11 +28,25 @@ jobs:
         id: timestamp
         run: echo "::set-output name=timestamp::$(date -u '+%Y-%m-%d_%I:%M:%S%p')"
       - name: Build
-        run: GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -ldflags "-X github.com/sinhashubham95/go-actuator/core.BuildStamp=${{ steps.timestamp.outputs.timestamp }} -X github.com/sinhashubham95/go-actuator/core.GitCommitID=${{ github.sha }} -X github.com/sinhashubham95/go-actuator/core.GitPrimaryBranch=${{ github.ref }} -X github.com/sinhashubham95/go-actuator/core.GitURL=https://github.com/${{ github.repository }} -X github.com/sinhashubham95/go-actuator/core.Username=${{ github.actor }} -X github.com/sinhashubham95/go-actuator/core.HostName=${{ job.container.id }}  -X github.com/sinhashubham95/go-actuator/core.GitCommitTime=${{ steps.timestamp.outputs.timestamp }} -X github.com/sinhashubham95/go-actuator/core.GitCommitAuthor=${{ github.actor }}" -o moxy-${{ matrix.os }}-${{ matrix.arch }}
-      - name: Upload Build
-        uses: skx/github-action-publish-binaries@master
+        run: GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -ldflags "-X github.com/sinhashubham95/go-actuator/core.BuildStamp=${{ steps.timestamp.outputs.timestamp }} -X github.com/sinhashubham95/go-actuator/core.GitCommitID=${{ github.sha }} -X github.com/sinhashubham95/go-actuator/core.GitPrimaryBranch=${{ github.ref }} -X github.com/sinhashubham95/go-actuator/core.GitURL=https://github.com/${{ github.repository }} -X github.com/sinhashubham95/go-actuator/core.Username=${{ github.actor }} -X github.com/sinhashubham95/go-actuator/core.HostName=${{ job.container.id }}  -X github.com/sinhashubham95/go-actuator/core.GitCommitTime=${{ steps.timestamp.outputs.timestamp }} -X github.com/sinhashubham95/go-actuator/core.GitCommitAuthor=${{ github.actor }}" -o
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: moxy-${{ matrix.os }}-${{ matrix.arch }}
+          path: moxy-${{ matrix.os }}-${{ matrix.arch }}
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download
+        uses: actions/download-artifact@v2
+      - name: Release
+        id: release
+        uses: softprops/action-gh-release@v1
+      - name: Upload
+        uses: skx/github-action-publish-binaries@release-1.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          releaseId: ${{ github.ref }}
+          releaseId: ${{ steps.release.outputs.id }}
           args: 'moxy-*'

@@ -56,8 +56,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CUSTOM_TAG: "v${{ steps.version.outputs.prop }}"
-      - name: Show Workspace
-        run: ls -R
       - name: Release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
@@ -65,5 +63,4 @@ jobs:
           prerelease: false
           title: ${{ steps.tag.outputs.new_tag }}
           automatic_release_tag: ${{ steps.tag.outputs.new_tag }}
-          files: |
-            moxy/moxy-*
+          files: moxy-*/moxy-*

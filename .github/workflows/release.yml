@@ -62,8 +62,4 @@ jobs:
         with:
           name: ${{ steps.tag.outputs.new_tag }}
           tag_name: ${{ steps.tag.outputs.new_tag }}
-          files: |
-            "/home/runner/work/moxy/moxy/moxy-linux-amd64"
-            "/home/runner/work/moxy/moxy/moxy-linux-arm64"
-            "/home/runner/work/moxy/moxy/moxy-darwin-amd64"
-            "/home/runner/work/moxy/moxy/moxy-darwin-arm64"
+          files: moxy-*

@@ -2,53 +2,17 @@ name: Release
 
 on:
   push:
-    branches: [master]
+    tags:
+      - 'v*'
 
 jobs:
-  test:
-    name: Test
-    strategy:
-      matrix:
-        platform: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ^1.16
-        id: go
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
-      - name: Get dependencies
-        run: |
-          go get -v -t -d ./...
-      - name: Run tests
-        run: go test ./... -coverprofile profile.cov
-      - name: Send coverage
-        uses: shogo82148/actions-goveralls@v1
-        with:
-          path-to-profile: profile.cov
-          flag-name: ${{ matrix.platform }}-go-${{ matrix.go-version }}
-          parallel: true
-
-  finish:
-    name: Finish
-    runs-on: ubuntu-latest
-    needs: [test]
-    steps:
-      - name: Sending coverage finished
-        uses: shogo82148/actions-goveralls@v1
-        with:
-          parallel-finished: true
-
-  build:
-    name: Build
+  release:
+    name: Release
     strategy:
       matrix:
         os: [linux, darwin]
         arch: [amd64, arm64]
     runs-on: ubuntu-latest
-    needs: [test]
     steps:
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
@@ -65,15 +29,10 @@ jobs:
         run: echo "::set-output name=timestamp::$(date -u '+%Y-%m-%d_%I:%M:%S%p')"
       - name: Build
         run: GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -ldflags "-X github.com/sinhashubham95/go-actuator/core.BuildStamp=${{ steps.timestamp.outputs.timestamp }} -X github.com/sinhashubham95/go-actuator/core.GitCommitID=${{ github.sha }} -X github.com/sinhashubham95/go-actuator/core.GitPrimaryBranch=${{ github.ref }} -X github.com/sinhashubham95/go-actuator/core.GitURL=https://github.com/${{ github.repository }} -X github.com/sinhashubham95/go-actuator/core.Username=${{ github.actor }} -X github.com/sinhashubham95/go-actuator/core.HostName=${{ job.container.id }}  -X github.com/sinhashubham95/go-actuator/core.GitCommitTime=${{ steps.timestamp.outputs.timestamp }} -X github.com/sinhashubham95/go-actuator/core.GitCommitAuthor=${{ github.actor }}" -o moxy-${{ matrix.os }}-${{ matrix.arch }}
-      - name: Tag
-        uses: K-Phoen/semver-release-action@master
-        with:
-          release_strategy: tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload Build
         uses: skx/github-action-publish-binaries@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          releaseId: ${{ github.ref }}
           args: 'moxy-*'

@@ -70,6 +70,18 @@ func TestMockRequestEmptyPath(t *testing.T) {
 	assert.Equal(t, "empty path provided", err.Error())
 }
 
+func TestMockRequestBasePath(t *testing.T) {
+	m := &models.MockRequest{
+		Tag:          "1234",
+		Method:       "GET",
+		Path:         "/",
+		ResponseBody: "naruto",
+	}
+	err := m.Validate()
+	assert.Error(t, err)
+	assert.Equal(t, fmt.Errorf("path cannot be %s", commons.BasePath), err)
+}
+
 func TestMockRequestActuatorPath(t *testing.T) {
 	m := &models.MockRequest{
 		Tag:          "1234",

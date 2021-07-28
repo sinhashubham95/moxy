@@ -30,17 +30,18 @@ func TestMockKey(t *testing.T) {
 
 func TestMockEncode(t *testing.T) {
 	bytes, err := (&entities.Mock{
-		Tag:    "1234",
-		Method: "GET",
-		Path:   "/naruto",
-		Status: 200,
-		Body:   "naruto-rocks",
+		Tag:           "1234",
+		Method:        "GET",
+		Path:          "/naruto",
+		DelayInMillis: 200,
+		Status:        200,
+		Body:          "naruto-rocks",
 	}).Encode()
 	assert.NoError(t, err)
 	assert.Equal(
 		t,
 		[]byte("{\"tag\":\"1234\",\"method\":\"GET\",\"path\":"+
-			"\"/naruto\",\"status\":200,\"body\":\"naruto-rocks\"}\n"),
+			"\"/naruto\",\"delayInMillis\":200,\"status\":200,\"body\":\"naruto-rocks\"}\n"),
 		bytes,
 	)
 }

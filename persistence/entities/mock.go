@@ -13,11 +13,12 @@ type MockKey struct {
 
 // Mock is the mock entity
 type Mock struct {
-	Tag    string      `json:"tag"`
-	Method string      `json:"method"`
-	Path   string      `json:"path"`
-	Status int         `json:"status"`
-	Body   interface{} `json:"body"`
+	Tag           string      `json:"tag"`
+	Method        string      `json:"method"`
+	Path          string      `json:"path"`
+	DelayInMillis int64       `json:"delayInMillis"`
+	Status        int         `json:"status"`
+	Body          interface{} `json:"body"`
 }
 
 // Name is the mock entity name

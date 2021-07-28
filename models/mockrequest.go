@@ -41,6 +41,9 @@ func (r *MockRequest) Validate() error {
 	if r.Path == "" {
 		return errors.New("empty path provided")
 	}
+	if r.Path == commons.BasePath {
+		return fmt.Errorf("path cannot be %s", commons.BasePath)
+	}
 	if strings.HasPrefix(r.Path, commons.ActuatorPrefix) {
 		return fmt.Errorf("path cannot start with %s", commons.ActuatorPrefix)
 	}

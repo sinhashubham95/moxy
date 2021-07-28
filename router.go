@@ -23,6 +23,8 @@ func getFastHTTPHandler() fasthttp.RequestHandler {
 			return
 		}
 		switch string(ctx.Path()) {
+		case commons.BasePath:
+			handle(ctx, http.MethodGet, controllers.HandleBase)
 		case commons.MockEndpointPath:
 			handle(ctx, http.MethodPost, controllers.HandleMock)
 		case commons.UnMockEndpointPath:

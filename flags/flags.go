@@ -1,10 +1,13 @@
 package flags
 
 import (
-	actuatorCommons "github.com/sinhashubham95/go-actuator/commons"
-	flag "github.com/spf13/pflag"
-
 	"github.com/sinhashubham95/moxy/commons"
+	flag "github.com/spf13/pflag"
+	"os"
+	"strconv"
+	"strings"
+
+	actuatorCommons "github.com/sinhashubham95/go-actuator/commons"
 )
 
 var (
@@ -41,6 +44,12 @@ func PersistencePath() string {
 
 // Port is the port number where the application is running
 func Port() int {
+	// see if the port is available from the environment variable
+	p, err := strconv.Atoi(os.Getenv(strings.ToUpper(commons.Port)))
+	if err == nil {
+		return p
+	}
+	// otherwise use the flag
 	return *port
 }
 

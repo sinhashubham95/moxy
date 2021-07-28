@@ -25,6 +25,7 @@ const (
 
 // Endpoint Paths
 var (
+	BasePath           = "/"
 	MockEndpointPath   = fmt.Sprintf("%smock", MoxyPrefix)
 	UnMockEndpointPath = fmt.Sprintf("%sunMock", MoxyPrefix)
 )

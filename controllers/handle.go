@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"net/http"
+	"time"
 
 	"github.com/sinhashubham95/moxy/commons"
 	"github.com/sinhashubham95/moxy/persistence/entities"
@@ -26,6 +27,8 @@ func Handle(ctx *fasthttp.RequestCtx) {
 	// try to fetch the mock
 	err := PersistenceView(&mock)
 	if err == nil {
+		// check if we need to delay sending the response
+		time.Sleep(time.Millisecond * time.Duration(mock.DelayInMillis))
 		// this means that the mock exists
 		ctx.SetStatusCode(mock.Status)
 		// writing the response here is tricky

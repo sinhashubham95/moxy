@@ -27,11 +27,12 @@ func HandleMock(ctx *fasthttp.RequestCtx) {
 	(&request).Default()
 	// now time to save it
 	err = PersistenceSave(&entities.Mock{
-		Tag:    request.Tag,
-		Method: request.Method,
-		Path:   request.Path,
-		Status: request.ResponseStatus,
-		Body:   request.ResponseBody,
+		Tag:           request.Tag,
+		Method:        request.Method,
+		Path:          request.Path,
+		DelayInMillis: request.ResponseDelayInMillis,
+		Status:        request.ResponseStatus,
+		Body:          request.ResponseBody,
 	})
 	if err != nil {
 		// unable to save the mock configurations

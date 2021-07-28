@@ -12,11 +12,12 @@ import (
 
 // MockRequest is the request body for the mock endpoint
 type MockRequest struct {
-	Tag            string      `json:"tag"`
-	Method         string      `json:"method"`
-	Path           string      `json:"path"`
-	ResponseStatus int         `json:"responseStatus"`
-	ResponseBody   interface{} `json:"responseBody"`
+	Tag                   string      `json:"tag"`
+	Method                string      `json:"method"`
+	Path                  string      `json:"path"`
+	ResponseDelayInMillis int64       `json:"responseDelayInMillis"`
+	ResponseStatus        int         `json:"responseStatus"`
+	ResponseBody          interface{} `json:"responseBody"`
 }
 
 // Clean is used to clean the request path

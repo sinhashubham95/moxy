@@ -26,8 +26,8 @@ const (
 // Endpoint Paths
 var (
 	BasePath           = "/"
-	MockEndpointPath   = fmt.Sprintf("%smock", MoxyPrefix)
-	UnMockEndpointPath = fmt.Sprintf("%sunMock", MoxyPrefix)
+	MockEndpointPath   = fmt.Sprintf("%s/mock", MoxyPrefix)
+	UnMockEndpointPath = fmt.Sprintf("%s/unMock", MoxyPrefix)
 )
 
 // MockEntityName is the mock entity name

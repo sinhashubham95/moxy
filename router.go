@@ -17,11 +17,23 @@ func getFastHTTPHandler() fasthttp.RequestHandler {
 		Prefix: commons.ActuatorPrefix,
 	})
 	return actuatorCore.WrapFastHTTPHandler(func(ctx *fasthttp.RequestCtx) {
+		// actuator
 		if strings.HasPrefix(string(ctx.Path()), commons.ActuatorPrefix) && string(ctx.Method()) == http.MethodGet {
 			// this means it is an actuator endpoint
 			actuatorHandler(ctx)
 			return
 		}
+
+		// cors
+		ctx.Response.Header.Add("Access-Control-Allow-Origin", "*")
+		ctx.Response.Header.Add("Access-Control-Allow-Credentials", "true")
+		ctx.Response.Header.Add("Access-Control-Allow-Headers", "*")
+		ctx.Response.Header.Add("Access-Control-Allow-Methods", "POST,HEAD,PATCH,OPTIONS,GET,PUT")
+		if strings.ToUpper(string(ctx.Method())) == http.MethodOptions {
+			ctx.SetStatusCode(http.StatusNoContent)
+			return
+		}
+
 		switch string(ctx.Path()) {
 		case commons.BasePath:
 			handle(ctx, http.MethodGet, controllers.HandleBase)

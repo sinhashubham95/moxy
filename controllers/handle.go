@@ -24,12 +24,6 @@ func Handle(ctx *fasthttp.RequestCtx) {
 		Path:   path,
 	}
 
-	// add the cors headers
-	ctx.Response.Header.Add("Access-Control-Allow-Origin", "*")
-	ctx.Response.Header.Add("Access-Control-Allow-Credentials", "true")
-	ctx.Response.Header.Add("Access-Control-Allow-Headers", "*")
-	ctx.Response.Header.Add("Access-Control-Allow-Methods", "POST,HEAD,PATCH,OPTIONS,GET,PUT")
-
 	// try to fetch the mock
 	err := PersistenceView(&mock)
 	if err == nil {
